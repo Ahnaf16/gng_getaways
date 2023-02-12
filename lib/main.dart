@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gng_getaways/gateway_page.dart';
+import 'package:routemaster/routemaster.dart';
 
 void main() {
+  Routemaster.setPathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -10,13 +12,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'GNG Getaways',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      routeInformationParser: const RoutemasterParser(),
+      routerDelegate: RoutemasterDelegate(
+        routesBuilder: (context) => routes,
       ),
-      home: const GatewayPage(),
     );
   }
 }
+
+final routes = RouteMap(
+  routes: {
+    '/': (route) {
+      final statusQuery = route.queryParameters['status'];
+      final status = PaymentStatus.fromString(statusQuery ?? '');
+      return MaterialPage(
+        child: GatewayPage(status: status),
+      );
+    },
+  },
+);
